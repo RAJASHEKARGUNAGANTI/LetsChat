@@ -1,21 +1,30 @@
-const Message = () => {
+import { useAuthContext } from "../../context/AuthContext";
+import useConversation from "../../zustand/useCoversation";
+import { extractTime } from "../../utils/extractTime";
+const Message = ({ message }) => {
+  const { authUser } = useAuthContext();
+  const { selectedConversation } = useConversation();
+  const fromMe = message.senderId === authUser?._id;
+  const chatClassName = fromMe ? "chat-end" : "chat-start";
+  const prifilePic = fromMe
+    ? authUser.profilePic
+    : selectedConversation?.profilePic;
+  const bubbleBgColor = fromMe ? "bg-blue-500" : "";
+  const formattedTime = extractTime(message.createdAt);
   return (
-    <div className="chat chat-end">
+    <div className={`chat ${chatClassName}`}>
       <div className="chat-image avatar">
         <div className="w-10 rounded-full">
-          <img
-            src="https://avatar.iran.liara.run/public/boy"
-            alt="User Avathar"
-          />
+          <img src={prifilePic} alt="User Avathar" />
         </div>
       </div>
-      <div className={`chat-bubble text-white bg-blue-500`}>
-        Hi! What is going on?
+      <div className={`chat-bubble text-white ${bubbleBgColor} pb-2`}>
+        {message.message}
       </div>
       <div
         className={`chat-footer  opacity-50 text-xs flex gap-1 items-center`}
       >
-        12:40
+        {formattedTime}
       </div>
     </div>
   );
